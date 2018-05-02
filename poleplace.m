@@ -26,11 +26,11 @@ function [R,S]=poleplace(B,A,Hr,Hs,P)
     M2 = M2(:, 1:n_a1);
     
     M = [M1, M2];
-    p = ([P,zeros(1, n_a1+n_b1+d-length(P))])';
-    x = M\p;
+    p = ([P,zeros(1, n_a1+n_b1+d-length(P))])'
+    x = M\p
     
-    S1 = x(1:n_s1+1)';
-    R1 = x(n_s1+2:end)';
+    S1 = x(1:n_s1+1)'
+    R1 = x(n_s1+2:end)'
     
     S = conv(S1,Hs);
     R = conv(R1,Hr);
