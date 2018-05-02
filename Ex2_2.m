@@ -16,7 +16,7 @@ T = sum(R)
 
 
 %% Ex2_3
-CL = tf(conv(T,B), P_end, Ts,'variable','z^-1')
+CL = tf(conv(T,B), P, Ts,'variable','z^-1')
 step(CL)
 
 K = deconv(R,S); %Comment on the result
