@@ -27,6 +27,9 @@ function [R,S]=poleplace(B,A,Hr,Hs,P)
     R1 = x(n_s1+2:end)'
    
     
+    S1 = x(1:n_s1+1)';
+    R1 = x(n_s1+2:end)';
+    
     S = conv(S1,Hs);
     R = conv(R1,Hr);
    
