@@ -54,3 +54,8 @@ P_end = conv(A,S) + conv(B,R)
 
 T = sum(R)
 
+Ts = 0.04;
+CL = tf(conv(T,B), P_end, Ts,'variable','z^-1')
+figure(1)
+step(CL)
+stepinfo(CL)
