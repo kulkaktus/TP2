@@ -16,7 +16,7 @@ function [R,S]=poleplace(B,A,Hr,Hs,P)
     % M1, M2 are left and right halves of sylvester matrix
     M1 = tril(toeplitz([A1,zeros(1,n_b1+d-1)]));
     M1 = M1(:, 1:n_b1+d)
-    M2 = tril(toeplitz([zeros(1,d+1), B1(2:end), zeros(1,n_a1-1)]));
+    M2 = tril(toeplitz([zeros(1,n_a1+d-n_b1+1), B1(2:end), zeros(1,n_b1-1)]));
     M2 = M2(:, 1:n_a1)
     
     M = [M1, M2]
