@@ -9,7 +9,6 @@ P = [1 p1 p2];
 
 Hs = [1 -1];
 Hr = [1]; 
-
 [R, S] = poleplace(B, A, Hr, Hs, P) 
 
 P_end = conv(A,S) + conv(B,R)

@@ -1,7 +1,0 @@
-load('TorMod.mat');
-
-
-Hs = [1 -1];
-Hr = [1];
-
-[R, S] = poleplace(
