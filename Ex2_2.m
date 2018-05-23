@@ -47,21 +47,56 @@ q = tf('q', 0.04);
 
 Hs = [1 -1];
 Hr = [1 1]; 
-
-[R, S] = poleplace(B, A, Hr, Hs, P) 
-
-P_end = conv(A,S) + conv(B,R)
-
-T = sum(R)
-
 a = 0.5;
 poles_aux = [a,a,a,a,a,a,a,a,a,a];
-coefs = poly(poles_aux)
-P_new = conv(P, P_f)
+coefs = poly(poles_aux);
+P_new = conv(P, coefs);
+
+[R, S] = poleplace(B, A, Hr, Hs, P_new) ;
+
+P_end = conv(A,S) + conv(B,R);
+
+T = sum(R);
+
+
 Ts = 0.04;
-CL = tf(conv(T,B), P_new, Ts,'variable','z^-1')
+CL = tf(conv(T,B), P_end, Ts,'variable','z^-1'); 
 figure(1)
 step(CL)
-U=tf(conv(A,R), P, Ts, 'variable', 'z^-1');
+U=tf(conv(A,R), P_end, Ts, 'variable', 'z^-1');
 figure(3)
 step(U)% Does not fullfill the criterium
+
+
+M_m = 0.4;
+U_max = 56.2; %35 dB  = 56.2
+q_delay = [0 1];
+
+R = [R, 0, 0];
+S = [S, 0, 0, 0];
+new_R = @(Q) R + conv(A, conv(Hr, conv(Hs, Q)));
+new_S = @(Q) (S + conv(q_delay, conv(B, conv(Hs, conv(Hr, Q)))));
+
+c = @(Q) [norm(M_m*(S + conv(q_delay, conv(B, conv(Hs, conv(Hr, Q))))), Inf) - 1;
+     norm(deconv(conv(A, new_R(Q)), P_new), Inf) - U_max];
+ceq = @(Q) [];
+zero = @(Q) 0;
+Mod_marg = @(Q) -(norm(S + conv(q_delay, conv(B, conv(Hs, conv(Hr, Q)))), Inf))^(-1);
+Nonlincon = @(Q)deal(c(Q), ceq(Q));
+Q_opt = fmincon(zero, [1,1], [], [], [],[], [-Inf,-Inf], [Inf,Inf], Nonlincon);
+
+final_R = new_R(Q_opt);
+final_S = new_S(Q_opt);
+
+T = sum(final_R);
+
+
+Ts = 0.04;
+
+CL = tf(conv(T,B), P_end, Ts,'variable','z^-1'); 
+figure(10)
+step(CL)
+stepinfo(CL)
+U=tf(conv(A,final_R), P_end, Ts, 'variable', 'z^-1');
+figure(11)
+step(U)
