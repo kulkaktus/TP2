@@ -54,3 +54,14 @@ P_end = conv(A,S) + conv(B,R)
 
 T = sum(R)
 
+a = 0.5;
+poles_aux = [a,a,a,a,a,a,a,a,a,a];
+coefs = poly(poles_aux)
+P_new = conv(P, P_f)
+Ts = 0.04;
+CL = tf(conv(T,B), P_new, Ts,'variable','z^-1')
+figure(1)
+step(CL)
+U=tf(conv(A,R), P, Ts, 'variable', 'z^-1');
+figure(3)
+step(U)% Does not fullfill the criterium
