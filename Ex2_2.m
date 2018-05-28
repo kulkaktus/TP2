@@ -47,7 +47,7 @@ q = tf('q', 0.04);
 
 Hs = [1 -1];
 Hr = [1 1]; 
-a = 0.5;
+a = 0.1;
 poles_aux = [a,a,a,a,a,a,a,a,a,a];
 coefs = poly(poles_aux);
 P_new = conv(P, coefs);
@@ -69,7 +69,7 @@ step(U)% Does not fullfill the criterium
 
 
 M_m = 0.4;
-U_max = 56.2; %35 dB  = 56.2
+U_max = 10; %35 dB  = 56.2
 q_delay = [0 1];
 
 R = [R, 0, 0];
@@ -78,7 +78,7 @@ new_R = @(Q) R + conv(A, conv(Hr, conv(Hs, Q)));
 new_S = @(Q) (S + conv(q_delay, conv(B, conv(Hs, conv(Hr, Q)))));
 
 c = @(Q) [norm(M_m*(S + conv(q_delay, conv(B, conv(Hs, conv(Hr, Q))))), Inf) - 1;
-     norm(deconv(conv(A, new_R(Q)), P_new), Inf) - U_max];
+     norm(deconv(conv(A, new_R(Q)), P_end), Inf) - U_max];
 ceq = @(Q) [];
 zero = @(Q) 0;
 Mod_marg = @(Q) -(norm(S + conv(q_delay, conv(B, conv(Hs, conv(Hr, Q)))), Inf))^(-1);
@@ -98,5 +98,6 @@ figure(10)
 step(CL)
 stepinfo(CL)
 U=tf(conv(A,final_R), P_end, Ts, 'variable', 'z^-1');
+bode(U)
 figure(11)
 step(U)
