@@ -51,8 +51,8 @@ a = 0.1;
 peaks = zeros(20, 3);
 current_best = 100;
 i = 1
-for nq = 9
-    for a=0.3
+for nq = 8:10
+    for a=0.1:0.1:0.3
         B = G3.b;
         poles_aux = [a,a,a,a,a,a,a,a,a,a];
         coefs = poly(poles_aux);
@@ -100,8 +100,9 @@ for nq = 9
         Ts = 0.04;
 
          CL = tf(conv(T,G3.b), P_end, Ts,'variable','z^-1'); 
-         U=tf(conv(A,final_R), P_end, Ts, 'variable', 'z^-1');
-         bode(U)
+    %     figure(10)
+    %     step(CL)
+    %     stepinfo(CL)
          input= tf(conv(T,A), conv(A,final_S) + conv(conv(q_delay, B), final_R), Ts,'variable','z^-1');
          step(input)
 
