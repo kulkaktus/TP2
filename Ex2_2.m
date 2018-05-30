@@ -9,9 +9,9 @@ P = [1 p1 p2];
 
 Hs = [1 -1];
 Hr = [1]; 
-[R, S] = poleplace(B, A, Hr, Hs, P) 
+[R, S] = poleplace(B, A, Hr, Hs, P);
 
-P_end = conv(A,S) + conv(B,R)
+P_end = conv(A,S) + conv(B,R);
 T = sum(R)
 
 
@@ -23,15 +23,18 @@ step(CL)
 stepinfo(CL)
 
 K = tf(R,S, Ts,'variable','z^-1')
-OL = G3*K;
+OL = tf(G3*K);
 figure(2)
-nyquist(OL) % 3 encriclments around -1 corresponds to 3 unstable poles 
+nyquist(OL) % 3 encirclements around -1 corresponds to 3 unstable poles 
 
-U=tf(conv(A,R), P, Ts, 'variable', 'z^-1');
+
+
 figure(3)
-step(U)% Does not fullfill the criterium
+input = tf(conv(T,A), conv(A,S) + conv(B, R), Ts,'variable','z^-1');
+step(input)
 figure(4)
-bode(U)
+U=tf(conv(A,R), P_end, Ts, 'variable', 'z^-1');
+bodemag(U)
 
 S3 = feedback(1,K*G3);
 M_m3 =inv(norm(S3,inf)) % 0.1566
@@ -47,12 +50,12 @@ q = tf('q', 0.04);
 
 Hs = [1 -1];
 Hr = [1 1]; 
-a = 0.1;
+a = 0.3;
 peaks = zeros(20, 3);
 current_best = 100;
 i = 1
 for nq = 9
-    for a=0.3
+    for a=0.4
         B = G3.b;
         poles_aux = [a,a,a,a,a,a,a,a,a,a];
         coefs = poly(poles_aux);
@@ -71,8 +74,8 @@ for nq = 9
         step(CL)
         U=tf(conv(A,R), P_end, Ts, 'variable', 'z^-1');
         figure(3)
-        %step(U)% Does not fullfill the criterium
-
+        bodemag(U)% Does not fullfill the criterium
+        figure(5)
         B = B(2:end);
         M_m = 0.4;
         U_max = 56.2; %35 dB  = 56.2
