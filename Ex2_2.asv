@@ -53,10 +53,11 @@ a = 0.2;
 nq = 9;
 
 
-Margins = zeros(50, 3);
-index = 1;
-for a = 0.1:0.05:0.5
-    for nq = 7:10
+Margins = zeros(1, 3);
+hail_marys = zeros(1, 4); %These satisfy all constraints and specs
+index = 1;  
+for a = 0.16
+    for nq = 8
         B = G3.B;
         poles_aux = [a,a,a,a,a,a,a,a,a,a];
         coefs = poly(poles_aux);
@@ -79,7 +80,7 @@ for a = 0.1:0.05:0.5
         
         K_new = @(Q) tf(R_new(Q),S_new(Q), Ts,'variable','z^-1');
         output_sensitivity = @(Q) feedback(1,K_new(Q)*G3);
-        Mod_marg = @(Q) -norm(output_sensitivity(Q), Inf)^(-1);
+        Mod_marg = @(Q) norm(output_sensitivity(Q), Inf)^(-1);
 
         %Set inequality (c) and equality (ceq) constraints
         c = @(Q) [norm(M_m*output_sensitivity(Q), Inf) - 1;
@@ -96,33 +97,38 @@ for a = 0.1:0.05:0.5
 
         K_final = tf(R_final,S_final, Ts,'variable','z^-1');
         Sens_out_new = feedback(1,K_final*G3);
-        MM_new = -Mod_marg(Q_opt);
-        Margins(index, :) = [MM_new, a, nq]
+        MM_new = Mod_marg(Q_opt)
+     
+        Margins(index, :) = [MM_new, a, nq];
         index = index + 1
+        CL = tf(conv(T,G3.b), P_end, Ts,'variable','z^-1'); 
+        cake = stepinfo(CL)
     end
 end
-
+hail_marys
 %% Check constraints
 CL = tf(conv(T,G3.b), P_end, Ts,'variable','z^-1'); 
 U=tf(conv(A,R_final), P_end, Ts, 'variable', 'z^-1');
 
 input= tf(conv(T,A), conv(A,S_final) + conv(conv(q_delay, B), R_final), Ts,'variable','z^-1'); figure(1);  
 step(input); figure(2);
-step(CL); figure(3);
+stepinfo(CL) 
+figure(3);
 bodemag(U);
 
 
 %% Plots
 hold on
-
-subplot(2,2,1)
+figure(1)
+ax1 = subplot(2,2,1)
+xlim(ax1, 0, 1.2)
 CL_old = tf(conv(T_old,G3.b), P_end_old, Ts,'variable','z^-1'); 
 CL = tf(conv(T,G3.b), P_end, Ts,'variable','z^-1'); 
-title("Tracking step response, original and improved controller")
-xlabel("Time [s]")
-legend("Original", "Improved")
-step(CL_old)
-step(CL)
+title(ax1, "Tracking step response, original and improved controller")
+xlabel(ax1, "Time [s]")
+legend(ax1, "Original", "Improved")
+step(CL_old, CL)
+
 
 subplot(2,2,2)
 B = G3.B;
@@ -133,8 +139,8 @@ title("Control signal, original and improved controller")
 xlabel("Time [s]")
 ylabel("u")
 legend("Original", "Improved")
-step(input_old)
-step(input)
+step(input_old, input)
+
 
 subplot(2,2,3)
 Sens_out = feedback(1,K*G3);
@@ -143,4 +149,14 @@ Sens_out_new = feedback(1,K_final*G3);
 MM_old = norm(Sens_out, Inf)^-1
 MM_new = (norm(Sens_out_new, Inf))^(-1)
 
+title("Output sensitivity function, original and improved controller")
+legend("Original","Improved")
+bodemag(Sens_out, Sens_out_new)
+
+
 subplot(2,2,4)
+U=tf(conv(A,R), P_end, Ts, 'variable', 'z^-1');
+U_new=tf(conv(A,R_final), P_end, Ts, 'variable', 'z^-1');
+title("Input sensitivity function, original and improved controller")
+legend("Original","Improved")
+bodemag(U, U_new)
