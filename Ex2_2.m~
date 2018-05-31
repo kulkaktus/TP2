@@ -11,8 +11,8 @@ Hs = [1 -1];
 Hr = [1]; 
 [R_old, S_old] = poleplace(B, A, Hr, Hs, P);
 
-P_end_old = conv(A,S_old) + conv(B,R_old);
-T_old = sum(R_old)
+P_end_old = conv(A,S) + conv(B,R);
+T_old = sum(R)
 
 
 %% Ex2_3
@@ -33,15 +33,15 @@ figure(3)
 input = tf(conv(T,A), conv(A,S) + conv(B, R), Ts,'variable','z^-1');
 step(input)
 figure(4)
-
+<<<<<<< Updated upstream
 U=tf(conv(A,R), P_end, Ts, 'variable', 'z^-1');
 bodemag(U)
 
-
+=======
 bode(U)
 figure(5)
 bode(OL)
-
+>>>>>>> Stashed changes
 S3 = feedback(1,K*G3);
 M_m3 = inv(norm(S3,inf)) % 0.1566
 %% 2.4
@@ -155,7 +155,7 @@ Q_opt = fmincon(zero, [1,1], [], [], [],[], [-Inf,-Inf], [Inf,Inf], Nonlincon);
 
 final_R = new_R(Q_opt);
 final_S = new_S(Q_opt);
-
+>>>>>>> Stashed changes
 
 subplot(2,2,2)
 B = G3.B;
