@@ -33,11 +33,17 @@ figure(3)
 input = tf(conv(T,A), conv(A,S) + conv(B, R), Ts,'variable','z^-1');
 step(input)
 figure(4)
+<<<<<<< Updated upstream
 U=tf(conv(A,R), P_end, Ts, 'variable', 'z^-1');
 bodemag(U)
 
+=======
+bode(U)
+figure(5)
+bode(OL)
+>>>>>>> Stashed changes
 S3 = feedback(1,K*G3);
-M_m3 =inv(norm(S3,inf)) % 0.1566
+M_m3 = inv(norm(S3,inf)) % 0.1566
 %% 2.4
 load('TorMod.mat');
 Ts = 0.04;
@@ -124,6 +130,33 @@ xlabel("Time [s]")
 legend("Original", "Improved")
 step(CL_old)
 step(CL)
+<<<<<<< Updated upstream
+=======
+U=tf(conv(A,R), P_end, Ts, 'variable', 'z^-1');
+figure(3)
+step(U)% Does not fullfill the criterium
+
+
+M_m = 0.4;
+U_max = 100; %35 dB  = 56.2
+q_delay = [0 1];
+
+R = [R, 0, 0];
+S = [S, 0, 0, 0];
+new_R = @(Q) R + conv(A,conv(Hr, conv(Hs, Q)));
+new_S = @(Q) (S - conv(q_delay, conv(B, conv(Hs, conv(Hr, Q)))));
+
+c = @(Q) [norm(M_m*(S + conv(q_delay, conv(B, conv(Hs, conv(Hr, Q))))), Inf) - 1;
+     norm(deconv(conv(A, new_R(Q)), P_end), Inf) - U_max];
+ceq = @(Q) [];
+zero = @(Q) 0;
+Mod_marg = @(Q) -(norm(S + conv(q_delay, conv(B, conv(Hs, conv(Hr, Q)))), Inf))^(-1);
+Nonlincon = @(Q)deal(c(Q), ceq(Q));
+Q_opt = fmincon(zero, [1,1], [], [], [],[], [-Inf,-Inf], [Inf,Inf], Nonlincon);
+
+final_R = new_R(Q_opt);
+final_S = new_S(Q_opt);
+>>>>>>> Stashed changes
 
 subplot(2,2,2)
 B = G3.B;
