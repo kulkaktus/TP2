@@ -11,7 +11,7 @@ Hs = [1 -1];
 Hr = [1 1]; 
 
 % Set auxiliary poles
-a = 0.3;
+a = 0.16;
 poles_aux = [a,a,a,a,a,a,a,a,a,a];
 coefs = poly(poles_aux);
 P_new = conv(P, coefs);
@@ -26,7 +26,7 @@ M_m = 0.4;
 U_max = 56.2; %35 dB  = 56.2
 
 % Create R and S functions
-Q_length = 9;
+Q_length = 8;
 R0 = [R, zeros(1, Q_length)];
 S0 = [S, zeros(1, Q_length)];
 R_new = @(Q) R0 + conv(A, conv(Hr, conv(Hs, Q)));

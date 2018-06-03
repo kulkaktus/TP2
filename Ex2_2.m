@@ -18,22 +18,22 @@ T_old = sum(R_old)
 %% Ex2_3
 Ts = 0.04;
 CL = tf(conv(T_old,B), P_end_old, Ts,'variable','z^-1')
-figure(2)
+figure
 step(CL)
 stepinfo(CL)
 
-K = tf(R,S, Ts,'variable','z^-1')
+K = tf(R_old,S_old, Ts,'variable','z^-1')
 OL = tf(G3*K);
 %figure(2)
 %nyquist(OL) % 3 encirclements around -1 corresponds to 3 unstable poles 
 
 
 
-figure(3)
+figure
 input_old = tf(conv(T_old,A), conv(A,S_old) + conv(B, R_old), Ts,'variable','z^-1');
-step(input)
-figure(4)
-U=tf(conv(A,R), P_end, Ts, 'variable', 'z^-1');
+step(input_old)
+figure
+U=tf(conv(A,R_old), P_end_old, Ts, 'variable', 'z^-1');
 bodemag(U)
 
 S3 = feedback(1,K*G3);
@@ -154,7 +154,7 @@ bodemag(Sens_out, Sens_out_new)
 
 
 subplot(2,2,4)
-U=tf(conv(A,R), P_end_old, Ts, 'variable', 'z^-1');
+U=tf(conv(A,R_old), P_end_old, Ts, 'variable', 'z^-1');
 U_new=tf(conv(A,R_final), P_end, Ts, 'variable', 'z^-1');
 title("Input sensitivity function, original and improved controller")
 legend("Original","Improved")
